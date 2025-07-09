@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍰 CheatCake - Custom Cake Orders</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'kanit': ['Kanit', 'sans-serif'],
+                    },
+                    colors: {
+                        'baby-pink': '#FFB6C1',
+                        'sky-blue': '#87CEEB',
+                        'cream': '#FFF8DC',
+                        'lavender': '#E6E6FA',
+                        'soft-pink': '#FFC0CB',
+                        'mint': '#F0FFF0'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #FFB6C1 0%, #87CEEB 50%, #E6E6FA 100%);
+        }
+
+        .price-highlight {
+            background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+            border: 2px solid #F59E0B;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.02);
+            }
+        }
+
+        .cake-type-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .cake-type-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .cake-type-card.selected {
+            border: 3px solid #EC4899;
+            background: linear-gradient(135deg, #FDF2F8, #FCE7F3);
+        }
+
+        .form-section {
+            background: linear-gradient(135deg, #FFF8DC, #F0FFF0);
+            border: 2px solid #FFB6C1;
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-cream via-lavender to-sky-blue min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white/90 backdrop-blur-md shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <span class="text-2xl font-bold text-pink-600">🍰 CheatCake</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html"
+                        class="nav-link text-gray-700 hover:text-pink-600 font-medium transition-colors">Home</a>
+                    <button
+                        class="bg-sky-blue text-white px-3 py-1 rounded-full text-sm hover:bg-blue-400 transition-colors">EN/TH</button>
+                    <button onclick="showLoginModal()"
+                        class="bg-pink-500 text-white px-6 py-2 rounded-full hover:bg-pink-600 transition-colors">Login</button>
+                </div>
+                <div class="md:hidden">
+                    <button onclick="toggleMobileMenu()" class="text-gray-700">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="md:hidden bg-white/95 backdrop-blur-md hidden">
+            <div class="px-4 py-2 space-y-2">
+                <a href="index.html" class="block py-2 text-gray-700 hover:text-pink-600">Home</a>
+                <button class="w-full text-left py-2 text-sky-600">EN/TH</button>
+                <button onclick="showLoginModal()"
+                    class="w-full bg-pink-500 text-white py-2 rounded-full mt-2">Login</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative pt-16 pb-20">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <div class="text-8xl mb-8">🍰</div>
+            <h1 class="text-5xl md:text-7xl font-bold text-white mb-6 drop-shadow-lg">
+                Custom Cake Orders
+            </h1>
+            <p class="text-xl md:text-2xl text-white/90 mb-8 drop-shadow">
+                Create your perfect cake with real-time pricing ✨
+            </p>
+            <button onclick="scrollToOrder()"
+                class="bg-pink-500 hover:bg-pink-600 text-white px-8 py-4 rounded-full text-xl font-semibold transition-all transform hover:scale-105 shadow-lg">
+                Start Your Order 🎂
+            </button>
+        </div>
+    </section>
+
+    <!-- Cart Button -->
+    <button onclick="openCart()" class="fixed bottom-6 right-6 bg-pink-500 text-white w-16 h-16 rounded-full shadow-lg hover:bg-pink-600 transition-all transform hover:scale-110 z-40">
+        <i class="fas fa-shopping-cart text-xl"></i>
+        <span id="cartCount" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-6 h-6 rounded-full flex items-center justify-center">0</span>
+    </button>
+
+    <!-- Queue Status Section -->
+    <section id="queue" class="py-20 pt-24 bg-white/80 backdrop-blur-sm">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">Check Cake Availability 📅</h2>
+                <p class="text-lg text-gray-600 mb-8">See which dates are available for your custom cake order</p>
+
+                <!-- Status Legend -->
+                <div class="flex flex-wrap justify-center gap-4 mb-8">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-4 h-4 rounded-full status-open"></div>
+                        <span class="text-sm font-medium">🟦 Open</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-4 h-4 rounded-full status-available"></div>
+                        <span class="text-sm font-medium">🟡 Available for 1 cake</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-4 h-4 rounded-full status-booked"></div>
+                        <span class="text-sm font-medium">🔴 Fully Booked</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-4 h-4 rounded-full status-closed"></div>
+                        <span class="text-sm font-medium">🟣 Closed</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendar View -->
+            <div class="bg-gradient-to-br from-pink-50 to-lavender-50 rounded-3xl p-8 shadow-lg">
+                <div class="flex justify-between items-center mb-6">
+                    <button onclick="prevMonth()"
+                        class="p-2 rounded-full bg-pink-200 hover:bg-pink-300 transition-colors">
+                        <i class="fas fa-chevron-left text-pink-600"></i>
+                    </button>
+                    <h3 id="currentMonth" class="text-2xl font-bold text-gray-800">December 2024</h3>
+                    <button onclick="nextMonth()"
+                        class="p-2 rounded-full bg-pink-200 hover:bg-pink-300 transition-colors">
+                        <i class="fas fa-chevron-right text-pink-600"></i>
+                    </button>
+                </div>
+
+                <!-- 📅 Calendar Grid July 2025 -->
+                <div id="calendarGrid" class="grid grid-cols-7 gap-2 text-center text-sm font-medium">
+
+                    <!-- Days of the week -->
+                    <div class="text-gray-500">Sun</div>
+                    <div class="text-gray-500">Mon</div>
+                    <div class="text-gray-500">Tue</div>
+                    <div class="text-gray-500">Wed</div>
+                    <div class="text-gray-500">Thu</div>
+                    <div class="text-gray-500">Fri</div>
+                    <div class="text-gray-500">Sat</div>
+
+                    <!-- Week padding: July 1 starts on Tuesday -->
+                    <div></div>
+                    <div></div>
+
+                    <!-- Week 1 -->
+                    <div onclick="showStatus(1)" class="day bg-red-500 text-white">1</div>
+                    <div onclick="showStatus(2)" class="day bg-red-500 text-white">2</div>
+                    <div onclick="showStatus(3)" class="day bg-pink-500 text-white">3</div>
+                    <div onclick="showStatus(4)" class="day bg-red-500 text-white">4</div>
+                    <div onclick="showStatus(5)" class="day bg-red-500 text-white">5</div>
+                    <div onclick="showStatus(6)" class="day bg-red-500 text-white">6</div>
+
+                    <!-- Week 2 -->
+                    <div onclick="showStatus(7)" class="day bg-red-500 text-white">7</div>
+                    <div onclick="showStatus(8)" class="day bg-pink-500 text-white">8</div>
+                    <div onclick="showStatus(9)" class="day bg-red-500 text-white">9</div>
+                    <div onclick="showStatus(10)" class="day bg-pink-500 text-white">10</div>
+                    <div onclick="showStatus(11)" class="day bg-yellow-300">11</div>
+                    <div onclick="showStatus(12)" class="day bg-yellow-300">12</div>
+                    <div onclick="showStatus(13)" class="day bg-yellow-300">13</div>
+
+                    <!-- Week 3 -->
+                    <div onclick="showStatus(14)" class="day bg-yellow-300">14</div>
+                    <div onclick="showStatus(15)" class="day bg-yellow-300">15</div>
+                    <div onclick="showStatus(16)" class="day bg-pink-500 text-white">16</div>
+                    <div onclick="showStatus(17)" class="day bg-red-500 text-white">17</div>
+                    <div onclick="showStatus(18)" class="day bg-yellow-300">18</div>
+                    <div onclick="showStatus(19)" class="day bg-yellow-300">19</div>
+                    <div onclick="showStatus(20)" class="day bg-yellow-300">20</div>
+
+                    <!-- Week 4 -->
+                    <div onclick="showStatus(21)" class="day bg-yellow-300">21</div>
+                    <div onclick="showStatus(22)" class="day bg-yellow-300">22</div>
+                    <div onclick="showStatus(23)" class="day bg-pink-500 text-white">23</div>
+                    <div onclick="showStatus(24)" class="day bg-yellow-300">24</div>
+                    <div onclick="showStatus(25)" class="day bg-yellow-300">25</div>
+                    <div onclick="showStatus(26)" class="day bg-pink-500 text-white">26</div>
+                    <div onclick="showStatus(27)" class="day bg-red-500 text-white">27</div>
+
+                    <!-- Week 5 -->
+                    <div onclick="showStatus(28)" class="day bg-yellow-300">28</div>
+                    <div onclick="showStatus(29)" class="day bg-yellow-300">29</div>
+                    <div onclick="showStatus(30)" class="day bg-yellow-300">30</div>
+                    <div onclick="showStatus(31)" class="day bg-pink-500 text-white">31</div>
+                </div>
+
+                <!-- 📢 Status Display -->
+                <div id="statusDisplay"
+                    class="mt-6 p-4 bg-white shadow-md rounded-lg text-center text-lg font-semibold text-pink-600 hidden">
+                    <!-- Status will appear here -->
+                </div>
+
+                <!-- 🧠 Script -->
+                <script>
+                    const statusMap = {
+                        1: "🔴 Fully Booked",
+                        2: "🔴 Fully Booked",
+                        3: "🟣 Closed",
+                        4: "🔴 Fully Booked",
+                        5: "🔴 Fully Booked",
+                        6: "🔴 Fully Booked",
+                        7: "🔴 Fully Booked",
+                        8: "🟣 Closed",
+                        9: "🔴 Fully Booked",
+                        10: "🟣 Closed",
+                        11: "🟡 Available for 1 cake",
+                        12: "🟡 Available for 1 cake",
+                        13: "🟡 Available for 1 cake",
+                        14: "🟡 Available for 1 cake",
+                        15: "🟡 Available for 1 cake",
+                        16: "🟣 Closed",
+                        17: "🔴 Fully Booked",
+                        18: "🟡 Available for 1 cake",
+                        19: "🟡 Available for 1 cake",
+                        20: "🟡 Available for 1 cake",
+                        21: "🟡 Available for 1 cake",
+                        22: "🟡 Available for 1 cake",
+                        23: "🟣 Closed",
+                        24: "🟡 Available for 1 cake",
+                        25: "🟡 Available for 1 cake",
+                        26: "🟣 Closed",
+                        27: "🔴 Fully Booked",
+                        28: "🟡 Available for 1 cake",
+                        29: "🟡 Available for 1 cake",
+                        30: "🟡 Available for 1 cake",
+                        31: "🟣 Closed"
+                    };
+
+                    function showStatus(day) {
+                        const box = document.getElementById("statusDisplay");
+                        box.innerText = `📅 July ${day}, 2025 – ${statusMap[day] || "No data"}`;
+                        box.classList.remove("hidden");
+                    }
+                </script>
+
+</section>
+                <!-- Order Section -->
+                <section id="order" class="py-20 pt-24">
+                    <div class="max-w-4xl mx-auto px-4">
+                        <div class="text-center mb-12">
+                            <h2 class="text-4xl font-bold text-gray-800 mb-4">🎂 Custom Cake Order</h2>
+                            <p class="text-lg text-gray-600">Design your perfect cake and see the price update
+                                instantly!</p>
+                        </div>
+
+                        <!-- Cake Type Selection -->
+                        <div class="form-section rounded-3xl p-8 mb-8 shadow-lg">
+                            <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                                <span class="text-3xl mr-3">🍰</span>
+                                Choose Your Cake Type
+                            </h3>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div class="cake-type-card bg-white rounded-2xl p-4 text-center shadow-md"
+                                    onclick="selectCakeType('birthday', 450)">
+                                    <div class="text-4xl mb-2">🎂</div>
+                                    <h4 class="font-bold text-gray-800 mb-1">Birthday Cake</h4>
+                                    <p class="text-sm text-gray-600 mb-2">Classic celebration</p>
+                                    <p class="font-bold text-pink-600">From ฿450</p>
+                                </div>
+                                <div class="cake-type-card bg-white rounded-2xl p-4 text-center shadow-md"
+                                    onclick="selectCakeType('heart', 380)">
+                                    <div class="text-4xl mb-2">💖</div>
+                                    <h4 class="font-bold text-gray-800 mb-1">Heart Cake</h4>
+                                    <p class="text-sm text-gray-600 mb-2">Perfect for love</p>
+                                    <p class="font-bold text-pink-600">From ฿380</p>
+                                </div>
+                                <div class="cake-type-card bg-white rounded-2xl p-4 text-center shadow-md"
+                                    onclick="selectCakeType('tall', 550)">
+                                    <div class="text-4xl mb-2">🏗️</div>
+                                    <h4 class="font-bold text-gray-800 mb-1">Tall Cake</h4>
+                                    <p class="text-sm text-gray-600 mb-2">Multi-layer wow</p>
+                                    <p class="font-bold text-pink-600">From ฿550</p>
+                                </div>
+                                <div class="cake-type-card bg-white rounded-2xl p-4 text-center shadow-md"
+                                    onclick="selectCakeType('cupcake', 220)">
+                                    <div class="text-4xl mb-2">🧁</div>
+                                    <h4 class="font-bold text-gray-800 mb-1">Cupcakes</h4>
+                                    <p class="text-sm text-gray-600 mb-2">Bite-sized joy</p>
+                                    <p class="font-bold text-pink-600">From ฿220</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Order Form -->
+                        <form id="cakeOrderForm" class="space-y-8">
+                            <!-- Step 1: Cake Size -->
+                            <div class="form-section rounded-3xl p-8 shadow-lg">
+                                <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                                    <span
+                                        class="bg-pink-500 text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 text-lg">①</span>
+                                    Select Cake Size
+                                </h3>
+                                <div class="grid md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-gray-700 font-semibold mb-3">
+                                            <i class="fas fa-ruler text-pink-500 mr-2"></i>
+                                            Choose Size
+                                        </label>
+                                        <select id="cakeSize" onchange="calculateTotalPrice()"
+                                            class="w-full px-4 py-3 rounded-full border-2 border-pink-200 focus:border-pink-500 focus:outline-none"
+                                            required>
+                                            <option value="">Select cake size...</option>
+                                            <option value="mini" data-multiplier="0.7">Mini (8cm) - Perfect for 2-3
+                                                people</option>
+                                            <option value="quarter" data-multiplier="0.8">1/4 Round (10cm) - Serves 4-6
+                                                people
+                                            </option>
+                                            <option value="half" data-multiplier="1.0">1/2 Round (12cm) - Serves 6-8
+                                                people</option>
+                                            <option value="one" data-multiplier="1.3">1 Layer (17cm) - Serves 10-12
+                                                people</option>
+                                            <option value="two" data-multiplier="1.8">2 Layers (21cm) - Serves 15-18
+                                                people</option>
+                                            <option value="three" data-multiplier="2.5">3 Layers (25cm) - Serves 20-25
+                                                people
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="flex items-center justify-center">
+                                        <div class="text-6xl">📏</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 2: Cake Flavor -->
+                            <div class="form-section rounded-3xl p-8 shadow-lg">
+                                <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                                    <span
+                                        class="bg-pink-500 text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 text-lg">②</span>
+                                    Select Cake Flavor
+                                </h3>
+                                <div class="grid md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-gray-700 font-semibold mb-3">
+                                            <i class="fas fa-ice-cream text-pink-500 mr-2"></i>
+                                            Choose Flavor
+                                        </label>
+                                        <select id="cakeFlavor" onchange="calculateTotalPrice()"
+                                            class="w-full px-4 py-3 rounded-full border-2 border-pink-200 focus:border-pink-500 focus:outline-none"
+                                            required>
+                                            <option value="">Select flavor...</option>
+                                            <option value="vanilla-strawberry" data-price="0">🍓 Vanilla Strawberry
+                                                Burst (+฿0)
+                                            </option>
+                                            <option value="chocolate-fudge" data-price="50">🍫 Chocolate Choco Fudge
+                                                (+฿50)</option>
+                                            <option value="milk-tea" data-price="30">🧋 Milk Tea (+฿30)</option>
+                                            <option value="coconut-pandan" data-price="40">🥥 Coconut Pandan (+฿40)
+                                            </option>
+                                            <option value="red-velvet" data-price="60">❤️ Red Velvet (+฿60)</option>
+                                            <option value="lemon" data-price="20">🍋 Lemon Zest (+฿20)</option>
+                                        </select>
+                                    </div>
+                                    <div class="flex items-center justify-center">
+                                        <div class="text-6xl">🎨</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 3: Add-ons -->
+                            <div class="form-section rounded-3xl p-8 shadow-lg">
+                                <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                                    <span
+                                        class="bg-pink-500 text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 text-lg">③</span>
+                                    Select Add-Ons
+                                </h3>
+                                <div class="grid md:grid-cols-2 gap-4">
+                                    <div class="space-y-3">
+                                        <label
+                                            class="flex items-center space-x-3 p-3 bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                                            <input type="checkbox" id="sparkles" value="50"
+                                                onchange="calculateTotalPrice()"
+                                                class="w-5 h-5 text-pink-500 rounded focus:ring-pink-500">
+                                            <div class="flex-1">
+                                                <div class="flex items-center justify-between">
+                                                    <span class="font-semibold text-gray-800">✨ Sparkles /
+                                                        Figures</span>
+                                                    <span class="text-pink-600 font-bold">+฿50</span>
+                                                </div>
+                                                <p class="text-sm text-gray-600">Add magical sparkles or small figures
+                                                </p>
+                                            </div>
+                                        </label>
+                                        <label
+                                            class="flex items-center space-x-3 p-3 bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                                            <input type="checkbox" id="cartoon" value="70"
+                                                onchange="calculateTotalPrice()"
+                                                class="w-5 h-5 text-pink-500 rounded focus:ring-pink-500">
+                                            <div class="flex-1">
+                                                <div class="flex items-center justify-between">
+                                                    <span class="font-semibold text-gray-800">🎭 3D Cartoon
+                                                        Toppers</span>
+                                                    <span class="text-pink-600 font-bold">+฿70</span>
+                                                </div>
+                                                <p class="text-sm text-gray-600">Custom 3D character decorations</p>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div class="space-y-3">
+                                        <label
+                                            class="flex items-center space-x-3 p-3 bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                                            <input type="checkbox" id="macaron" value="50"
+                                                onchange="calculateTotalPrice()"
+                                                class="w-5 h-5 text-pink-500 rounded focus:ring-pink-500">
+                                            <div class="flex-1">
+                                                <div class="flex items-center justify-between">
+                                                    <span class="font-semibold text-gray-800">🍪 Macaron
+                                                        Decoration</span>
+                                                    <span class="text-pink-600 font-bold">+฿50</span>
+                                                </div>
+                                                <p class="text-sm text-gray-600">Beautiful macaron border</p>
+                                            </div>
+                                        </label>
+                                        <label
+                                            class="flex items-center space-x-3 p-3 bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                                            <input type="checkbox" id="giftbox" value="60"
+                                                onchange="calculateTotalPrice()"
+                                                class="w-5 h-5 text-pink-500 rounded focus:ring-pink-500">
+                                            <div class="flex-1">
+                                                <div class="flex items-center justify-between">
+                                                    <span class="font-semibold text-gray-800">🎁 Themed Gift Box</span>
+                                                    <span class="text-pink-600 font-bold">+฿60</span>
+                                                </div>
+                                                <p class="text-sm text-gray-600">Special packaging box</p>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 4: Quantity -->
+                            <div class="form-section rounded-3xl p-8 shadow-lg">
+                                <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                                    <span
+                                        class="bg-pink-500 text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 text-lg">④</span>
+                                    Quantity (Optional)
+                                </h3>
+                                <div class="flex items-center justify-center space-x-6">
+                                    <button type="button" onclick="changeQuantity(-1)"
+                                        class="w-12 h-12 bg-pink-200 rounded-full flex items-center justify-center hover:bg-pink-300 transition-colors text-xl font-bold">
+                                        -
+                                    </button>
+                                    <div class="text-center">
+                                        <div class="text-4xl font-bold text-pink-600" id="quantity">1</div>
+                                        <div class="text-gray-600">Cake(s)</div>
+                                    </div>
+                                    <button type="button" onclick="changeQuantity(1)"
+                                        class="w-12 h-12 bg-pink-200 rounded-full flex items-center justify-center hover:bg-pink-300 transition-colors text-xl font-bold">
+                                        +
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Order Summary -->
+                            <div class="price-highlight rounded-3xl p-8 shadow-lg">
+                                <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                                    <span class="text-3xl mr-3">🧾</span>
+                                    Order Summary
+                                </h3>
+                                <div id="orderSummary" class="space-y-3 text-lg">
+                                    <div class="flex justify-between items-center">
+                                        <span class="flex items-center">
+                                            <i class="fas fa-birthday-cake text-pink-500 mr-2"></i>
+                                            Base Cake:
+                                        </span>
+                                        <span id="baseCakePrice" class="font-bold text-pink-600">฿0</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="flex items-center">
+                                            <i class="fas fa-ice-cream text-pink-500 mr-2"></i>
+                                            Flavor Upgrade:
+                                        </span>
+                                        <span id="flavorPrice" class="font-bold text-pink-600">฿0</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="flex items-center">
+                                            <i class="fas fa-plus-circle text-pink-500 mr-2"></i>
+                                            Add-ons:
+                                        </span>
+                                        <span id="addonsPrice" class="font-bold text-pink-600">฿0</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="flex items-center">
+                                            <i class="fas fa-times text-pink-500 mr-2"></i>
+                                            Quantity:
+                                        </span>
+                                        <span id="quantityDisplay" class="font-bold text-pink-600">1</span>
+                                    </div>
+                                    <div class="border-t-2 border-orange-300 pt-3 mt-3">
+                                        <div class="flex justify-between items-center text-2xl">
+                                            <span class="font-bold flex items-center">
+                                                <i class="fas fa-calculator text-orange-500 mr-2"></i>
+                                                Total:
+                                            </span>
+                                            <span id="totalPrice" class="font-bold text-orange-600 text-3xl">฿0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Customer Details -->
+                            <div class="form-section rounded-3xl p-8 shadow-lg">
+                                <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                                    <span
+                                        class="bg-pink-500 text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 text-lg">⑤</span>
+                                    Your Details
+                                </h3>
+                                <div class="grid md:grid-cols-2 gap-6">
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label class="block text-gray-700 font-semibold mb-2">
+                                                <i class="fas fa-user text-pink-500 mr-2"></i>
+                                                Your Name *
+                                            </label>
+                                            <input type="text" id="customerName" placeholder="Enter your full name"
+                                                class="w-full px-4 py-3 rounded-full border-2 border-pink-200 focus:border-pink-500 focus:outline-none"
+                                                required>
+                                        </div>
+                                        <div>
+                                            <label class="block text-gray-700 font-semibold mb-2">
+                                                <i class="fas fa-phone text-pink-500 mr-2"></i>
+                                                Phone Number *
+                                            </label>
+                                            <input type="tel" id="customerPhone" placeholder="081-234-5678"
+                                                class="w-full px-4 py-3 rounded-full border-2 border-pink-200 focus:border-pink-500 focus:outline-none"
+                                                required>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label class="block text-gray-700 font-semibold mb-2">
+                                                <i class="fas fa-calendar text-pink-500 mr-2"></i>
+                                                Delivery Date *
+                                            </label>
+                                            <input type="date" id="deliveryDate"
+                                                class="w-full px-4 py-3 rounded-full border-2 border-pink-200 focus:border-pink-500 focus:outline-none"
+                                                required>
+                                        </div>
+                                        <div>
+                                            <label class="block text-gray-700 font-semibold mb-2">
+                                                <i class="fas fa-pen text-pink-500 mr-2"></i>
+                                                Text on Cake
+                                            </label>
+                                            <input type="text" id="cakeText" placeholder="e.g., Happy Birthday Sarah!"
+                                                class="w-full px-4 py-3 rounded-full border-2 border-pink-200 focus:border-pink-500 focus:outline-none">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="text-center">
+                                <button type="submit"
+                                    class="bg-gradient-to-r from-pink-500 to-orange-400 text-white px-12 py-4 rounded-full hover:from-pink-600 hover:to-orange-500 transition-colors font-bold text-xl shadow-lg transform hover:scale-105">
+                                    Submit My Cake Order 🎂
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+
+                <script>
+                    // Global variables
+                    let selectedCakeType = null;
+                    let baseCakePrice = 0;
+                    let currentQuantity = 1;
+
+                    // Cake type prices
+                    const cakeTypePrices = {
+                        'birthday': 450,
+                        'heart': 380,
+                        'tall': 550,
+                        'cupcake': 220
+                    };
+
+                    // Select cake type function
+                    function selectCakeType(type, price) {
+                        // Remove previous selection
+                        document.querySelectorAll('.cake-type-card').forEach(card => {
+                            card.classList.remove('selected');
+                        });
+
+                        // Add selection to clicked card
+                        event.currentTarget.classList.add('selected');
+
+                        selectedCakeType = type;
+                        baseCakePrice = price;
+                        calculateTotalPrice();
+                    }
+
+                    // Calculate total price function
+                    function calculateTotalPrice() {
+                        if (!selectedCakeType) {
+                            // Reset all prices if no cake type selected
+                            document.getElementById('baseCakePrice').textContent = '฿0';
+                            document.getElementById('flavorPrice').textContent = '฿0';
+                            document.getElementById('addonsPrice').textContent = '฿0';
+                            document.getElementById('totalPrice').textContent = '฿0';
+                            return;
+                        }
+
+                        // Get base price with size multiplier
+                        let finalBasePrice = baseCakePrice;
+                        const sizeSelect = document.getElementById('cakeSize');
+                        if (sizeSelect.value) {
+                            const multiplier = parseFloat(sizeSelect.selectedOptions[0].dataset.multiplier);
+                            finalBasePrice = Math.round(baseCakePrice * multiplier);
+                        }
+
+                        // Get flavor upgrade price
+                        let flavorPrice = 0;
+                        const flavorSelect = document.getElementById('cakeFlavor');
+                        if (flavorSelect.value) {
+                            flavorPrice = parseInt(flavorSelect.selectedOptions[0].dataset.price) || 0;
+                        }
+
+                        // Calculate add-ons price
+                        let addonsPrice = 0;
+                        const addons = ['sparkles', 'cartoon', 'macaron', 'giftbox'];
+                        addons.forEach(addon => {
+                            const checkbox = document.getElementById(addon);
+                            if (checkbox && checkbox.checked) {
+                                addonsPrice += parseInt(checkbox.value);
+                            }
+                        });
+
+                        // Calculate subtotal
+                        const subtotal = finalBasePrice + flavorPrice + addonsPrice;
+
+                        // Calculate total with quantity
+                        const total = subtotal * currentQuantity;
+
+                        // Update display
+                        document.getElementById('baseCakePrice').textContent = `฿${finalBasePrice}`;
+                        document.getElementById('flavorPrice').textContent = `฿${flavorPrice}`;
+                        document.getElementById('addonsPrice').textContent = `฿${addonsPrice}`;
+                        document.getElementById('quantityDisplay').textContent = currentQuantity;
+                        document.getElementById('totalPrice').textContent = `฿${total}`;
+                    }
+
+                    // Change quantity function
+                    function changeQuantity(change) {
+                        const newQuantity = currentQuantity + change;
+                        if (newQuantity >= 1 && newQuantity <= 10) {
+                            currentQuantity = newQuantity;
+                            document.getElementById('quantity').textContent = currentQuantity;
+                            calculateTotalPrice();
+                        }
+                    }
+
+                    // Scroll to order section
+                    function scrollToOrder() {
+                        document.getElementById('order').scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    }
+
+                    // Form submission
+                    document.getElementById('cakeOrderForm').addEventListener('submit', function (e) {
+                        const existingCart = JSON.parse(localStorage.getItem('cart')) || [];
+                        existingCart.push(orderData);
+                        localStorage.setItem('cart', JSON.stringify(existingCart));
+
+                        e.preventDefault();
+
+                        if (!selectedCakeType) {
+                            alert('Please select a cake type first! 🍰');
+                            return;
+                        }
+
+                        const formData = new FormData(this);
+                        const orderData = {
+                            cakeType: selectedCakeType,
+                            size: document.getElementById('cakeSize').value,
+                            flavor: document.getElementById('cakeFlavor').value,
+                            quantity: currentQuantity,
+                            customerName: document.getElementById('customerName').value,
+                            customerPhone: document.getElementById('customerPhone').value,
+                            deliveryDate: document.getElementById('deliveryDate').value,
+                            cakeText: document.getElementById('cakeText').value,
+                            totalPrice: document.getElementById('totalPrice').textContent
+                        };
+
+                        // Collect selected add-ons
+                        const selectedAddons = [];
+                        ['sparkles', 'cartoon', 'macaron', 'giftbox'].forEach(addon => {
+                            const checkbox = document.getElementById(addon);
+                            if (checkbox && checkbox.checked) {
+                                selectedAddons.push(addon);
+                            }
+                        });
+                        orderData.addons = selectedAddons;
+
+                        console.log('Order submitted:', orderData);
+
+                        // Show success message
+                        alert(`🎉 Order submitted successfully!\n\nTotal: ${orderData.totalPrice}\nWe'll contact you at ${orderData.customerPhone} to confirm your order.\n\nThank you for choosing CheatCake! 💕`);
+
+                        // Reset form
+                        this.reset();
+                        selectedCakeType = null;
+                        baseCakePrice = 0;
+                        currentQuantity = 1;
+                        document.getElementById('quantity').textContent = '1';
+                        document.querySelectorAll('.cake-type-card').forEach(card => {
+                            card.classList.remove('selected');
+                        });
+                        calculateTotalPrice();
+                    });
+
+                    // Set minimum date to today
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const today = new Date().toISOString().split('T')[0];
+                        document.getElementById('deliveryDate').setAttribute('min', today);
+                    });
+                </script>
+                <script>(function () { function c() { var b = a.contentDocument || a.contentWindow.document; if (b) { var d = b.createElement('script'); d.innerHTML = "window.__CF$cv$params={r:'95c5c6c071e19bba',t:'MTc1MjA0MjY2NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);"; b.getElementsByTagName('head')[0].appendChild(d) } } if (document.body) { var a = document.createElement('iframe'); a.height = 1; a.width = 1; a.style.position = 'absolute'; a.style.top = 0; a.style.left = 0; a.style.border = 'none'; a.style.visibility = 'hidden'; document.body.appendChild(a); if ('loading' !== document.readyState) c(); else if (window.addEventListener) document.addEventListener('DOMContentLoaded', c); else { var e = document.onreadystatechange || function () { }; document.onreadystatechange = function (b) { e(b); 'loading' !== document.readyState && (document.onreadystatechange = e, c()) } } } })();</script>
+
+                
+
+
+
+</body>
+
+</html>
