@@ -75,8 +75,8 @@
                 Sweet Dreams Bakery
             </h1>
             <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-                Create your perfect custom cake with our easy ordering system. 
-                We'll receive your order instantly and get started on your sweet dream!
+                สร้างเค้กในแบบของคุณได้ง่าย ๆ ด้วยระบบสั่งทำสุดสะดวก
+                เราจะได้รับออร์เดอร์ของคุณทันที และเริ่มสร้างเค้กในฝันแสนหวานให้คุณ!
             </p>
         </div>
     </header>
@@ -85,7 +85,7 @@
     <main class="max-w-2xl mx-auto px-4 pb-12">
         <div class="bg-white rounded-3xl shadow-2xl p-8 md:p-12 border border-pink-100">
             <h2 class="font-display text-3xl font-semibold text-gray-800 mb-8 text-center">
-                Order Your Custom Cake
+                สั่งเค้กในแบบของคุณ
             </h2>
             
             <form id="cakeOrderForm" class="space-y-6">
@@ -283,13 +283,12 @@
             // Format the message for LINE
             currentOrderMessage = `🎂 NEW CAKE ORDER 🎂
 
-👤 Customer: ${orderData.name}
-📞 Phone: ${orderData.phone}
-📅 Delivery Date: ${new Date(orderData.deliveryDate).toLocaleDateString()}
-💬 Message on Cake: ${orderData.customMessage}
-📝 Additional Details: ${orderData.additionalDetails}
-
-Order received at: ${new Date().toLocaleString()}`;
+👤 ลูกค้า: ${orderData.name}
+📞 เบอร์โทร: ${orderData.phone}
+📅 วันรับ: ${new Date(orderData.deliveryDate).toLocaleDateString()}
+💬 ข้อความบนเค้ก: ${orderData.customMessage}
+📝 รายละเอียดเพิ่มเติม: ${orderData.additionalDetails}
+📩 ส่งเมื่อ: ${new Date().toLocaleString()}`;
 
             try {
                 // In a real implementation, replace with your actual LINE Notify token
