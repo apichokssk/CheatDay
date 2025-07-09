@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -14,8 +14,6 @@
 <body class="bg-pink-50 min-h-screen flex items-center justify-center">
   <div class="bg-white shadow-lg rounded-xl p-8 w-full max-w-xl">
     <h1 class="text-3xl font-bold text-center text-pink-600 mb-6">🎂 สั่งเค้กกับ CheatCake</h1>
-
-    <!-- ฟอร์มกรอกข้อมูล -->
     <form id="cakeForm" class="space-y-4">
       <input type="text" name="name" placeholder="ชื่อของคุณ" required class="w-full p-3 border rounded-md" />
       <input type="tel" name="phone" placeholder="เบอร์โทร" required class="w-full p-3 border rounded-md" />
@@ -28,17 +26,11 @@
       </button>
     </form>
 
-    <!-- ข้อความสำเร็จ + ปุ่มเปิด LINE -->
     <div id="successMessage" class="hidden mt-6 text-green-600 text-center">
-      ✅ ส่งออร์เดอร์เรียบร้อยแล้ว! ขอบคุณที่ใช้บริการ CheatCake 🎉<br/>
-      <a href="https://line.me/R/ti/p/@cheatcake" target="_blank" 
-         class="inline-block mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-        📩 เปิดแชทกับร้านใน LINE
-      </a>
+      ✅ ส่งออร์เดอร์เรียบร้อยแล้ว! ขอบคุณที่ใช้บริการ CheatCake 🎉
     </div>
   </div>
 
-  <!-- JavaScript สำหรับส่งข้อมูล -->
   <script>
     document.getElementById('cakeForm').addEventListener('submit', async function (e) {
       e.preventDefault();
@@ -53,9 +45,7 @@
       };
 
       try {
-        const response = await fetch("https://eowdyrkav1fn3ne.m.pipedream.net", {
-          // หรือใส่ Firebase Functions endpoint ก็ได้ เช่น:
-          // "https://us-central1-cheatcake-order-2025.cloudfunctions.net/api/sendLineOrder"
+        const response = await fetch("https://us-central1-cheatcake-order-2025.cloudfunctions.net/api/sendLineOrder", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
