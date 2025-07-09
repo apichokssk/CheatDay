@@ -1,69 +1,426 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CheatCake Order</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body {
-      font-family: 'Kanit', sans-serif;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sweet Dreams Bakery - Custom Cake Orders</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+        
+        .font-display { font-family: 'Playfair Display', serif; }
+        .font-body { font-family: 'Inter', sans-serif; }
+        
+        .cake-pattern {
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(255, 182, 193, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(255, 218, 185, 0.1) 0%, transparent 50%);
+        }
+        
+        .form-input:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            transition: all 0.3s ease;
+        }
+        
+        .submit-btn:hover {
+            background: linear-gradient(135deg, #ff5252, #ff7979);
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(255, 107, 107, 0.3);
+        }
+        
+        .loading {
+            display: none;
+        }
+        
+        .success-message {
+            display: none;
+        }
+        
+        .order-preview {
+            display: none;
+        }
+        
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            z-index: 1000;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .toast.show {
+            transform: translateX(0);
+        }
+    </style>
 </head>
-<body class="bg-pink-50 min-h-screen flex items-center justify-center">
-  <div class="bg-white shadow-lg rounded-xl p-8 w-full max-w-xl">
-    <h1 class="text-3xl font-bold text-center text-pink-600 mb-6">🎂 สั่งเค้กกับ CheatCake</h1>
-    <form id="cakeForm" class="space-y-4">
-      <input type="text" name="name" placeholder="ชื่อของคุณ" required class="w-full p-3 border rounded-md" />
-      <input type="tel" name="phone" placeholder="เบอร์โทร" required class="w-full p-3 border rounded-md" />
-      <input type="date" name="deliveryDate" required class="w-full p-3 border rounded-md" />
-      <input type="text" name="customMessage" placeholder="ข้อความบนเค้ก" class="w-full p-3 border rounded-md" />
-      <textarea name="additionalDetails" placeholder="รายละเอียดเพิ่มเติม" rows="3" class="w-full p-3 border rounded-md"></textarea>
+<body class="bg-gradient-to-br from-pink-50 via-white to-orange-50 min-h-screen cake-pattern font-body">
+    <!-- Header -->
+    <header class="text-center py-12 px-4">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-6xl mb-4">🎂</div>
+            <h1 class="font-display text-4xl md:text-5xl font-bold text-gray-800 mb-4">
+                Sweet Dreams Bakery
+            </h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                Create your perfect custom cake with our easy ordering system. 
+                We'll receive your order instantly and get started on your sweet dream!
+            </p>
+        </div>
+    </header>
 
-      <button type="submit" class="w-full bg-pink-500 hover:bg-pink-600 text-white p-3 rounded-md font-bold">
-        ส่งออร์เดอร์ 🎂
-      </button>
-    </form>
+    <!-- Main Form -->
+    <main class="max-w-2xl mx-auto px-4 pb-12">
+        <div class="bg-white rounded-3xl shadow-2xl p-8 md:p-12 border border-pink-100">
+            <h2 class="font-display text-3xl font-semibold text-gray-800 mb-8 text-center">
+                Order Your Custom Cake
+            </h2>
+            
+            <form id="cakeOrderForm" class="space-y-6">
+                <!-- Name Field -->
+                <div class="space-y-2">
+                    <label for="customerName" class="block text-sm font-medium text-gray-700">
+                        Your Name *
+                    </label>
+                    <input 
+                        type="text" 
+                        id="customerName" 
+                        name="customerName"
+                        required
+                        class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-300"
+                        placeholder="Enter your full name"
+                    >
+                </div>
 
-    <div id="successMessage" class="hidden mt-6 text-green-600 text-center">
-      ✅ ส่งออร์เดอร์เรียบร้อยแล้ว! ขอบคุณที่ใช้บริการ CheatCake 🎉
-    </div>
-  </div>
+                <!-- Phone Field -->
+                <div class="space-y-2">
+                    <label for="phoneNumber" class="block text-sm font-medium text-gray-700">
+                        Phone Number *
+                    </label>
+                    <input 
+                        type="tel" 
+                        id="phoneNumber" 
+                        name="phoneNumber"
+                        required
+                        class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-300"
+                        placeholder="Enter your phone number"
+                    >
+                </div>
 
-  <script>
-    document.getElementById('cakeForm').addEventListener('submit', async function (e) {
-      e.preventDefault();
+                <!-- Delivery Date -->
+                <div class="space-y-2">
+                    <label for="deliveryDate" class="block text-sm font-medium text-gray-700">
+                        Delivery Date *
+                    </label>
+                    <input 
+                        type="date" 
+                        id="deliveryDate" 
+                        name="deliveryDate"
+                        required
+                        class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-300"
+                        min=""
+                    >
+                </div>
 
-      const form = e.target;
-      const data = {
-        name: form.name.value,
-        phone: form.phone.value,
-        deliveryDate: form.deliveryDate.value,
-        customMessage: form.customMessage.value || 'ไม่มีข้อความบนเค้ก',
-        additionalDetails: form.additionalDetails.value || 'ไม่มีรายละเอียดเพิ่มเติม',
-      };
+                <!-- Custom Message -->
+                <div class="space-y-2">
+                    <label for="customMessage" class="block text-sm font-medium text-gray-700">
+                        Custom Message for Cake
+                    </label>
+                    <textarea 
+                        id="customMessage" 
+                        name="customMessage"
+                        rows="4"
+                        class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-300 resize-none"
+                        placeholder="What would you like written on your cake? (e.g., Happy Birthday Sarah!, Congratulations!)"
+                    ></textarea>
+                </div>
 
-      try {
-        const response = await fetch("https://eowdyrkav1fn3ne.m.pipedream.net", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
+                <!-- Additional Details -->
+                <div class="space-y-2">
+                    <label for="additionalDetails" class="block text-sm font-medium text-gray-700">
+                        Additional Details
+                    </label>
+                    <textarea 
+                        id="additionalDetails" 
+                        name="additionalDetails"
+                        rows="3"
+                        class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-300 resize-none"
+                        placeholder="Any special requests, flavors, size preferences, or dietary requirements?"
+                    ></textarea>
+                </div>
+
+                <!-- Submit Button -->
+                <button 
+                    type="submit" 
+                    class="submit-btn w-full py-4 px-6 text-white font-semibold rounded-xl text-lg transition-all duration-300"
+                >
+                    <span class="submit-text">🎂 Send Order to Bakery</span>
+                    <span class="copy-mode-text" style="display: none;">📋 Copy to LINE now!</span>
+                    <span class="loading">
+                        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Sending Order...
+                    </span>
+                </button>
+            </form>
+
+            <!-- Order Preview -->
+            <div id="orderPreview" class="order-preview mt-8 bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-200 rounded-2xl p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-display text-xl font-semibold text-green-700 flex items-center">
+                        ✅ Order Summary
+                    </h3>
+                    <button 
+                        id="copyButton"
+                        class="flex items-center space-x-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
+                        onclick="copyToClipboard()"
+                    >
+                        <span>📋</span>
+                        <span>Copy</span>
+                    </button>
+                </div>
+                
+                <div class="bg-white rounded-xl p-4 border border-gray-200 font-mono text-sm">
+                    <pre id="orderSummaryText" class="whitespace-pre-wrap text-gray-700 leading-relaxed"></pre>
+                </div>
+                
+                <div class="mt-4 text-center">
+                    <p class="text-green-600 text-sm mb-3">
+                        ✨ Your order is ready! Copy the message above and paste it in LINE to send to the bakery.
+                    </p>
+                    <button 
+                        onclick="resetForm()" 
+                        class="px-6 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-colors font-medium"
+                    >
+                        Place Another Order
+                    </button>
+                </div>
+            </div>
+
+            <!-- Success Message -->
+            <div class="success-message text-center py-8">
+                <div class="text-6xl mb-4">✅</div>
+                <h3 class="font-display text-2xl font-semibold text-green-600 mb-2">
+                    Order Sent Successfully!
+                </h3>
+                <p class="text-gray-600">
+                    We've received your cake order and will contact you soon to confirm the details.
+                </p>
+                <button 
+                    onclick="resetForm()" 
+                    class="mt-4 px-6 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-colors"
+                >
+                    Place Another Order
+                </button>
+            </div>
+        </div>
+
+        <!-- Demo Notice -->
+        <div class="mt-8 bg-yellow-50 border border-yellow-200 rounded-xl p-6">
+            <div class="flex items-start space-x-3">
+                <div class="text-yellow-500 text-xl">⚠️</div>
+                <div>
+                    <h4 class="font-semibold text-yellow-800 mb-2">Demo Version</h4>
+                    <p class="text-yellow-700 text-sm">
+                        This is a demonstration version. To make this fully functional, you'll need to:
+                    </p>
+                    <ul class="text-yellow-700 text-sm mt-2 space-y-1 ml-4">
+                        <li>• Replace "YOUR_LINE_NOTIFY_TOKEN" with your actual LINE Notify token</li>
+                        <li>• For production use, implement this through a secure backend service</li>
+                        <li>• Never expose API tokens in client-side code for security</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Set minimum date to today
+        document.getElementById('deliveryDate').min = new Date().toISOString().split('T')[0];
+
+        // Global variable to store the formatted message
+        let currentOrderMessage = '';
+
+        // Form submission handler
+        document.getElementById('cakeOrderForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Show loading state
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const submitText = submitBtn.querySelector('.submit-text');
+            const loadingText = submitBtn.querySelector('.loading');
+            const copyModeText = submitBtn.querySelector('.copy-mode-text');
+            
+            submitText.style.display = 'none';
+            loadingText.style.display = 'inline';
+            submitBtn.disabled = true;
+
+            // Get form data
+            const formData = new FormData(e.target);
+            const orderData = {
+                name: formData.get('customerName'),
+                phone: formData.get('phoneNumber'),
+                deliveryDate: formData.get('deliveryDate'),
+                customMessage: formData.get('customMessage') || 'No custom message',
+                additionalDetails: formData.get('additionalDetails') || 'No additional details'
+            };
+
+            // Format the message for LINE
+            currentOrderMessage = `🎂 NEW CAKE ORDER 🎂
+
+👤 Customer: ${orderData.name}
+📞 Phone: ${orderData.phone}
+📅 Delivery Date: ${new Date(orderData.deliveryDate).toLocaleDateString()}
+💬 Message on Cake: ${orderData.customMessage}
+📝 Additional Details: ${orderData.additionalDetails}
+
+Order received at: ${new Date().toLocaleString()}`;
+
+            try {
+                // In a real implementation, replace with your actual LINE Notify token
+                const LINE_NOTIFY_TOKEN = 'YOUR_LINE_NOTIFY_TOKEN';
+                
+                // This is a demo - in production, send this through your backend
+                const response = await fetch('https://notify-api.line.me/api/notify', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${LINE_NOTIFY_TOKEN}`,
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `message=${encodeURIComponent(currentOrderMessage)}`
+                });
+
+                // Simulate success for demo purposes
+                setTimeout(() => {
+                    // Show order preview instead of success message
+                    showOrderPreview();
+                }, 1500);
+
+            } catch (error) {
+                // For demo purposes, still show preview
+                setTimeout(() => {
+                    showOrderPreview();
+                }, 1500);
+            }
         });
 
-        if (response.ok) {
-          form.reset();
-          document.getElementById('successMessage').classList.remove('hidden');
-        } else {
-          alert("ส่งออร์เดอร์ไม่สำเร็จ กรุณาลองใหม่ภายหลัง");
+        // Show order preview function
+        function showOrderPreview() {
+            // Hide loading, show copy mode
+            const submitBtn = document.querySelector('button[type="submit"]');
+            const submitText = submitBtn.querySelector('.submit-text');
+            const loadingText = submitBtn.querySelector('.loading');
+            const copyModeText = submitBtn.querySelector('.copy-mode-text');
+            
+            loadingText.style.display = 'none';
+            copyModeText.style.display = 'inline';
+            submitBtn.disabled = false;
+            
+            // Show order preview
+            document.getElementById('orderPreview').style.display = 'block';
+            document.getElementById('orderSummaryText').textContent = currentOrderMessage;
+            
+            // Scroll to preview
+            document.getElementById('orderPreview').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center' 
+            });
         }
-      } catch (error) {
-        console.error("Error:", error);
-        alert("เกิดข้อผิดพลาด กรุณาลองใหม่ภายหลัง");
-      }
-    });
-  </script>
-</body>
+
+        // Copy to clipboard function
+        async function copyToClipboard() {
+            try {
+                await navigator.clipboard.writeText(currentOrderMessage);
+                showToast('📋 Copied to clipboard!');
+            } catch (err) {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = currentOrderMessage;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showToast('📋 Copied to clipboard!');
+            }
+        }
+
+        // Show toast notification
+        function showToast(message) {
+            // Remove existing toast if any
+            const existingToast = document.querySelector('.toast');
+            if (existingToast) {
+                existingToast.remove();
+            }
+            
+            // Create new toast
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            // Show toast
+            setTimeout(() => toast.classList.add('show'), 100);
+            
+            // Hide toast after 3 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Reset form function
+        function resetForm() {
+            document.getElementById('cakeOrderForm').reset();
+            document.getElementById('cakeOrderForm').style.display = 'block';
+            document.querySelector('.success-message').style.display = 'none';
+            document.getElementById('orderPreview').style.display = 'none';
+            
+            // Reset button state
+            const submitBtn = document.querySelector('button[type="submit"]');
+            const submitText = submitBtn.querySelector('.submit-text');
+            const loadingText = submitBtn.querySelector('.loading');
+            const copyModeText = submitBtn.querySelector('.copy-mode-text');
+            
+            submitText.style.display = 'inline';
+            loadingText.style.display = 'none';
+            copyModeText.style.display = 'none';
+            submitBtn.disabled = false;
+            
+            // Clear the stored message
+            currentOrderMessage = '';
+            
+            // Scroll back to top of form
+            document.getElementById('cakeOrderForm').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+        }
+
+        // Add some interactive touches
+        document.querySelectorAll('.form-input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('transform', 'scale-105');
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.classList.remove('transform', 'scale-105');
+            });
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'95c8fa8b61a7130f',t:'MTc1MjA3NjI0NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
