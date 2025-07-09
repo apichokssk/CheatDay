@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CheatCake Order</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;700&display=swap" rel="stylesheet" />
   <style>
     body {
       font-family: 'Kanit', sans-serif;
@@ -14,6 +15,7 @@
 <body class="bg-pink-50 min-h-screen flex items-center justify-center">
   <div class="bg-white shadow-lg rounded-xl p-8 w-full max-w-xl">
     <h1 class="text-3xl font-bold text-center text-pink-600 mb-6">🎂 สั่งเค้กกับ CheatCake</h1>
+    
     <form id="cakeForm" class="space-y-4">
       <input type="text" name="name" placeholder="ชื่อของคุณ" required class="w-full p-3 border rounded-md" />
       <input type="tel" name="phone" placeholder="เบอร์โทร" required class="w-full p-3 border rounded-md" />
@@ -27,12 +29,14 @@
     </form>
 
     <div id="successMessage" class="hidden mt-6 text-green-600 text-center">
-      ✅ ส่งออร์เดอร์เรียบร้อยแล้ว! ขอบคุณที่ใช้บริการ CheatCake 🎉
+      ✅ ส่งออร์เดอร์เรียบร้อยแล้ว! ระบบจะพาไปหน้าแชทร้านใน LINE 🎉
     </div>
   </div>
 
   <script>
-    document.getElementById('cakeForm').addEventListener('submit', async function (e) {
+    const LINE_URL = "https://line.me/R/ti/p/@cheatcake"; // 👈 เปลี่ยนเป็น LINE OA ID ของคุณ (ต้องมี @)
+
+    document.getElementById("cakeForm").addEventListener("submit", async function (e) {
       e.preventDefault();
 
       const form = e.target;
@@ -40,11 +44,12 @@
         name: form.name.value,
         phone: form.phone.value,
         deliveryDate: form.deliveryDate.value,
-        customMessage: form.customMessage.value || 'ไม่มีข้อความบนเค้ก',
-        additionalDetails: form.additionalDetails.value || 'ไม่มีรายละเอียดเพิ่มเติม',
+        customMessage: form.customMessage.value || "ไม่มีข้อความบนเค้ก",
+        additionalDetails: form.additionalDetails.value || "ไม่มีรายละเอียดเพิ่มเติม",
       };
 
       try {
+        // ส่งไปยัง webhook เช่น Pipedream หรือ Firebase API
         const response = await fetch("https://eowdyrkav1fn3ne.m.pipedream.net", {
           method: "POST",
           headers: {
@@ -55,7 +60,12 @@
 
         if (response.ok) {
           form.reset();
-          document.getElementById('successMessage').classList.remove('hidden');
+          document.getElementById("successMessage").classList.remove("hidden");
+
+          // รอ 1 วินาทีแล้วพาไป LINE แชทร้าน
+          setTimeout(() => {
+            window.location.href = LINE_URL;
+          }, 1000);
         } else {
           alert("ส่งออร์เดอร์ไม่สำเร็จ กรุณาลองใหม่ภายหลัง");
         }
